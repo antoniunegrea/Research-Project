@@ -1,0 +1,150 @@
+\documentclass[12pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{booktabs}
+% ---------------------------------------------------------------------------------
+
+\begin{document}
+
+\title{A Novel Approach to Route Similarity Measures for Shared Mobility Matching Systems}
+\author{Antoniu Negrea}
+\date{2025}
+\maketitle
+
+\tableofcontents
+
+\chapter{Modeling the Experimental Part}
+
+This chapter rigorously describes the data used, the planned experiments,
+the mathematical modeling of the similarity measures, the algorithms compared,
+and the validation methods. The goal is to demonstrably prove, in a reproducible
+and analytically supported manner, that the proposed approach brings
+improvements over existing methods found in the literature.
+
+\section{The Dataset}
+
+\subsection{Representation of Urban Routes}
+
+Each route is modeled as an ordered list of GPS points:
+\[
+R = \{ (lat_1, lon_1), \dots, (lat_n, lon_n) \}.
+\]
+
+The data sources are:
+\begin{itemize}
+\item simplified urban road network
+\item artificially simulated routes for controlled scenarios
+\end{itemize}
+
+To reduce complexity, the GPS points are projected onto a
+discretized network $G = (V, E)$, where $V$ are intersections and $E$ are segments.
+
+\subsection{User Profiles}
+
+Each user is associated with a triplet:
+\[
+U_i = (o_i, d_i, t_i),
+\]
+where $o_i$ is the origin, $d_i$ the destination, and $t_i$ the temporal interval (time window).
+
+\section{Simplified Similarity Measures}
+
+The proposed methodology uses two measures that are easy to implement:
+
+\subsection{Geometric Similarity}
+
+For two routes $R_1$, $R_2$:
+\[
+S_{geo}(R_1, R_2) = 1 - \frac{1}{|R_1|} \sum_{p \in R_1} \min_{q \in R_2} d(p,q),
+\]
+where $d(p,q)$ is the Haversine distance.
+
+\subsection{Segment Overlap}
+
+\[
+S_{overlap}(R_1, R_2) = \frac{|R_1 \cap R_2|}{\max(|R_1|, |R_2|)}.
+\]
+
+\subsection{The Final Similarity Function}
+
+A simple linear function:
+\[
+S_{final}(R_1, R_2) = \alpha S_{geo}(R_1, R_2) + \beta S_{overlap}(R_1, R_2),
+\]
+where $\alpha + \beta = 1$.
+
+\section{Matching Algorithms}
+
+\subsection{Static Matching — Partition Merging}
+
+The objective is to group users such that the cost is minimized:
+\[
+\text{cost}(G) = \sum_{i,j \in G} (1 - S_{final}(R_i, R_j)).
+\]
+
+\subsection{Dynamic Matching — Greedy}
+
+For a new request:
+\[
+\Delta \text{cost} = \text{cost}(G \cup \{U_k\}) - \text{cost}(G).
+\]
+
+The request is allocated to the group with the minimum $\Delta \text{cost}$.
+
+\section{Proposed Experiments}
+
+\subsection{Experiment 1: Static vs. Greedy}
+
+The comparison between the two algorithms (Static Partition Merging and Dynamic Greedy) uses two principal metrics:
+\begin{enumerate}
+    \item \textbf{Efficiency} (Travel Gain): The reduction in total travel distance.
+    \[
+    \text{TravelGain} = \frac{D_{solo} - D_{shared}}{D_{solo}}.
+    \]
+    \item \textbf{Equity} (Maximum Relative Detour, MRD): The highest proportional increase in travel distance/time 
+    experienced by any single rider in a shared group. This assesses the fairness of the solution.
+\end{enumerate}
+
+\subsection{Experiment 2: Impact of Parameters \(\alpha, \beta\)}
+
+The influence of weights on matching quality is analyzed using both the \textbf{Travel Gain} and \textbf{MRD} metrics 
+to assess the trade-off between efficiency and equity.
+
+\subsection{Experiment 3: Scalability}
+
+We measure:
+\begin{itemize}
+\item runtime;
+\item memory used.
+\end{itemize}
+
+\section{Validation Methods}
+
+Validation is exclusively numerical:
+
+\subsection{Internal Validation}
+
+Repeated simulations with artificially generated data.
+
+\subsection{External Validation}
+
+Comparison of results with:
+\begin{itemize}
+\item Xia \& Curtin (2019) – spatial model;
+\item Duan (2018) – partition merging;
+\item Sun (2023) – greedy.
+\end{itemize}
+
+\section{Conclusion}
+
+The experimental model is simplified, reproducible, and easy to implement.
+It allows for the evaluation of similarity functions and matching algorithms.
+
+\end{document}

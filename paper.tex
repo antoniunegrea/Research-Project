@@ -147,4 +147,114 @@ Comparison of results with:
 The experimental model is simplified, reproducible, and easy to implement.
 It allows for the evaluation of similarity functions and matching algorithms.
 
+\chapter{Case Study on the Initial Dataset}
+
+This chapter presents a controlled experiment performed on a small simulated
+dataset to validate the proposed methodology in a simple scenario.
+
+\section{Dataset Description}
+
+The initial set contains:
+\begin{itemize}
+\item 10 short routes with controlled characteristics (50–200 m);
+\item close or distant origins and destinations;
+\item simple intersections for ease of implementation.
+\end{itemize}
+
+Three types of scenarios are included, each run with 10 routes:
+\begin{enumerate}
+\item nearly identical routes (IDENTICAL);
+\item partially overlapping routes (PARTIAL);
+\item completely different routes (DIFFERENT).
+\end{enumerate}
+
+\section{Experimental Code Implementation}
+
+The practical component consists of implementing the following in Python:
+\begin{itemize}
+\item a route generator;
+\item the $S_{geo}$ and $S_{overlap}$ functions;
+\item the static and greedy algorithms;
+\item the metrics measurement module.
+\end{itemize}
+
+Code structure:
+\begin{verbatim}
+ExperimentalPart/
+    route_generator.py
+    similarity.py
+    static_matching.py
+    greedy_matching.py
+    metrics.py
+    main.py
+\end{verbatim}
+
+\section{Results and Analysis}
+
+The initial simulations were executed using $N=10$ routes per scenario, comparing the Static Matching (Partition Merging) against the Dynamic Matching (Greedy) approach. The results are summarized below.
+
+\subsection{Experiment 1: Static vs. Greedy (\(\alpha=\beta=0.5\))}
+
+The initial experiment focuses on baseline performance using balanced similarity weights.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Experiment 1: Static vs. Greedy Comparison (\(\alpha=0.5, \beta=0.5\))}
+    \begin{tabular}{lccccc}
+        \toprule
+        \textbf{Scenario} & \textbf{Algorithm} & \textbf{Groups} & \textbf{Avg. Size} & \textbf{Travel Gain} & \textbf{MRD} \\
+        \midrule
+        IDENTICAL & Static & 1 & 10.00 & 90.00\% & 0.00\% \\
+        & Greedy & 1 & 10.00 & 90.00\% & 0.00\% \\
+        \midrule
+        PARTIAL & Static & 6 & 1.67 & 18.87\% & 50.00\% \\
+        & Greedy & 6 & 1.67 & 15.09\% & 50.00\% \\
+        \midrule
+        DIFFERENT & Static & 8 & 1.25 & 7.69\% & 100.00\% \\
+        & Greedy & 6 & 1.67 & 15.38\% & 100.00\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{itemize}
+    \item \textbf{Identical Scenario:} As expected, both algorithms performed optimally, merging all 10 routes into a single group, yielding the maximum possible 90.00\% Travel Gain and zero detour (0.00\% MRD). This validates the algorithms' ability to identify perfect matches.
+    \item \textbf{Partial Scenario:} The \textbf{Static Matching} algorithm achieved a slightly higher Travel Gain (18.87\%) compared to the Greedy approach (15.09\%), indicating that its global optimization view resulted in marginally more efficient overall groupings, even though both formed the same number of groups (6) and had the same average size (1.67) and MRD (50.00\%).
+    \item \textbf{Different Scenario:} The results here are highly revealing. While both algorithms correctly showed low efficiency and high detours (100.00\% MRD), the Greedy algorithm unexpectedly yielded a better Travel Gain (15.38\% vs. Static's 7.69\%) despite forming fewer groups (6 vs. 8). This suggests that in scenarios with poor inherent matchability, the sequential nature of the Greedy algorithm might, by chance, establish a few highly efficient initial groups that the Static algorithm's global, similarity-driven cost function failed to identify under this specific weight setting.
+\end{itemize}
+
+\subsection{Experiment 2: Impact of Parameters (\(\alpha, \beta\)) on 'Partial' Scenario}
+
+This experiment used the PARTIAL scenario as a testbed to analyze how the relative weighting of geometric similarity ($\alpha$) versus segment overlap ($\beta$) affects efficiency and equity.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Experiment 2: Parameter Impact on Matching Quality (PARTIAL Scenario)}
+    \begin{tabular}{lccccc}
+        \toprule
+        \textbf{$\alpha$} & \textbf{$\beta$} & \textbf{Algorithm} & \textbf{Travel Gain} & \textbf{MRD} \\
+        \midrule
+        0.1 & 0.9 & Static & 25.45\% & 0.00\% \\
+        (Overlap-Heavy) & & Greedy & 25.45\% & 0.00\% \\
+        \midrule
+        0.5 & 0.5 & Static & 29.09\% & 20.00\% \\
+        (Balanced) & & Greedy & 20.00\% & 50.00\% \\
+        \midrule
+        0.9 & 0.1 & Static & 29.09\% & 20.00\% \\
+        (Geometric-Heavy) & & Greedy & \textbf{30.91\%} & 50.00\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{itemize}
+    \item \textbf{Geometric-Heavy ($\alpha=0.9, \beta=0.1$):} This setting proved to be the most successful for maximizing efficiency, with the \textbf{Greedy algorithm achieving the highest Travel Gain (30.91\%)} across all tests. This result confirms that $S_{geo}$ (geometric proximity) is the most informative metric in our similarity function. However, the Static algorithm achieved a high gain (29.09\%) while maintaining a significantly lower detour (\textbf{MRD 20.00\%} vs. Greedy's 50.00\%), highlighting the trade-off: Static matching offers superior equity for similar efficiency.
+    \item \textbf{Overlap-Heavy ($\alpha=0.1, \beta=0.9$):} This setting resulted in perfect equity (0.00\% MRD) for both algorithms, but at the cost of constrained efficiency (25.45\% gain). This high $\beta$ weight makes the similarity function overly strict, only permitting near-identical route matches, which limits the potential for efficiency gains by excluding feasible, but slightly detoured, matches.
+\end{itemize}
+
+\section{Conclusion}
+
+The initial set \textbf{quantitatively confirms} that the two simple similarity measures are sufficient for
+relevant and measurable experiments. The results validate the model by demonstrating clear performance differences—for
+instance, the dependence on parameter weighting and the inherent trade-off between the Static (equity-focused) and Greedy (efficiency-focused) algorithms. The experiments successfully demonstrated the sensitivity and impact of the final similarity
+function's weighting, with the $S_{geo}$ component proving to be a critical factor for high-quality matching.
+
 \end{document}

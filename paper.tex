@@ -257,4 +257,73 @@ relevant and measurable experiments. The results validate the model by demonstra
 instance, the dependence on parameter weighting and the inherent trade-off between the Static (equity-focused) and Greedy (efficiency-focused) algorithms. The experiments successfully demonstrated the sensitivity and impact of the final similarity
 function's weighting, with the $S_{geo}$ component proving to be a critical factor for high-quality matching.
 
+\chapter{Preparation for Validation on Real Data}
+
+This chapter establishes the technical requirements and analytical framework necessary for the external validation of the proposed similarity measures and matching algorithms. The final validation will be performed on real-world trajectory datasets, allowing for performance comparison against established approaches in the literature.
+
+\section{Selecting Datasets and Preprocessing}
+
+Validation will be performed on datasets frequently used in academic literature, specifically:
+\begin{itemize}
+\item \textbf{Porto Taxi Trajectory Dataset:} Provides a large volume of trips with fine-grained temporal and spatial data.
+\item \textbf{Beijing Trajectory Dataset:} Offers contrasting urban road network characteristics, often used for scalability tests.
+\item \textbf{Real OpenStreetMap (OSM) Maps:} Used as the underlying graph $G=(V, E)$ onto which all raw GPS data must be projected.
+\end{itemize}
+
+\subsection*{Data Acquisition and Map Matching}
+The transition from raw GPS data to the discrete route representation used by the model is non-trivial. The discrete network representation requires each raw route $R_{raw} = \{ (lat_1, lon_1), \dots \}$ to undergo a \textbf{Map Matching} process. This process converts the noisy GPS coordinates into an ordered sequence of segments (edges) on the OSM road network.
+
+The final representation of a route $R_i$ for validation purposes must be a sequence of road segment IDs:
+\[
+R_i = \{ s_1, s_2, \dots, s_m \}, \quad s_j \in E.
+\]
+This segment-based representation is crucial, as it allows for the precise calculation of $\mathbf{S_{overlap}}$ and accurate accounting of $\mathbf{D_{shared}}$ for the Travel Gain metric.
+
+\section{Existing Work}
+
+The proposed approach is evaluated against three established methods, chosen for their distinct strategies in ride-sharing matching:
+
+\begin{itemize}
+\item \textbf{Xia \& Curtin (2019) -- Spatial Density Model:} This work utilizes complex spatial clustering algorithms. Our approach contrasts sharply by using a simplified, weighted combination ($\mathbf{S_{geo}}$) which prioritizes computational speed and tunability over complex density-based heuristics.
+\item \textbf{Duan (2018) -- Partition Merging:} Duan's method relies on maximizing trip efficiency. The comparison here will focus on their specific, often proprietary, cost function against our generalized cost function: $\text{cost}(G) = \sum (1 - S_{final})$. We aim to demonstrate that a simple, similarity-driven cost function is competitive with more tailored models.
+\item \textbf{Sun (2023) -- Time-Constrained Greedy:} Sun's approach uses a robust time-dependent cost function within a greedy framework. We compare our purely spatial $\mathbf{S_{final}}$ score to their time-space cost to isolate the impact of the similarity measures themselves on matching quality, particularly on the \textbf{Travel Gain} and \textbf{Fairness} metrics.
+\end{itemize}
+
+\section{Comparison of the Proposed Approach}
+
+Our methodology offers two primary advantages over the existing work:
+
+\begin{itemize}
+\item \textbf{Tunable Similarity Function:} The linear combination $S_{final} = \alpha S_{geo} + \beta S_{overlap}$ provides explicit control over the influence of geometric proximity versus shared infrastructure. Experiments will systematically test $\alpha \in [0, 1]$ to identify the optimal balance, a level of control often obfuscated in black-box models.
+
+\item \textbf{Algorithmic Flexibility:} By providing robust implementations of both Static (optimal, slow) and Greedy (fast, heuristic) matching strategies, the model allows researchers to choose the trade-off between matching quality (high Travel Gain) and computational runtime (scalability), depending on the application context (e.g., pre-scheduling versus real-time dynamic dispatch).
+\end{itemize}
+
+\section{Metrics for Validation}
+
+While the controlled case study focused on basic efficiency, validation on real data requires comprehensive metrics that address efficiency, equity, and computational performance.
+
+\begin{itemize}
+\item \textbf{Efficiency ($\mathbf{E}$): Average Distance Saved / Travel Gain}
+\[
+\text{TravelGain} = \frac{D_{solo} - D_{shared}}{D_{solo}}
+\]
+This remains the primary metric for measuring the overall success of the carpooling strategy in reducing total mileage.
+
+\item \textbf{Equity ($\mathbf{Q}$): Maximum Relative Detour (Fairness)}
+Fairness is assessed by the detour experienced by any single rider. The \textbf{Relative Detour ($D_i$)} for a traveler $i$ is calculated as the increase in their travel time (or distance) compared to driving alone:
+$$D_i = \frac{T_{shared, i} - T_{solo, i}}{T_{solo, i}}$$
+The system's \textbf{Fairness} is then defined as the maximum detour imposed on any matched traveler, known as the \textbf{Maximum Relative Detour (MRD)}:
+$$\text{MRD} = \max_{i} (D_i)$$
+The objective is to maximize Travel Gain while constraining the MRD to an acceptable limit (e.g., MRD $\le 20\%$).
+
+\item \textbf{Performance ($\mathbf{P}$): Runtime}
+The total time required for the matching process will be measured as a function of the number of requests ($N$) to evaluate the practical scalability of both the static and greedy algorithms.
+\end{itemize}
+
+\section{Conclusion}
+
+This chapter successfully establishes the analytical context and metric framework required for the final validation. By formally defining the data requirements, the comparative works, and the critical Maximum Relative Detour (MRD) metric, the subsequent chapters can proceed with the rigorous external validation necessary to prove the value of the proposed similarity model.
+
+
 \end{document}

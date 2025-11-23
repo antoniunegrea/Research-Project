@@ -18,6 +18,29 @@
 \date{2025}
 \maketitle
 
+\begin{abstract}
+Shared mobility systems rely on accurately identifying trips that can be efficiently and fairly matched.
+A central challenge in such systems is the definition of route similarity measures that are both
+computationally efficient and effective in capturing meaningful spatial overlap between user trajectories.
+
+This paper addresses the problem of route similarity evaluation for shared mobility matching,
+with a focus on simplicity, interpretability, and reproducibility.
+The main contribution is a lightweight similarity model that combines a geometric proximity measure
+with a segment overlap metric into a tunable linear similarity function.
+Unlike many existing approaches that rely on complex spatial clustering or black-box optimization,
+the proposed method is intentionally simple and analytically transparent.
+
+The paper further introduces and compares two matching strategies: a static global optimization
+approach based on partition merging, and a dynamic greedy assignment strategy suitable for real-time scenarios.
+Experimental validation is conducted on both synthetic datasets and prepared real-world trajectory datasets.
+The results demonstrate that the proposed similarity model achieves competitive travel efficiency,
+while offering explicit control over fairness through parameter tuning.
+
+Overall, the study shows that simple similarity measures, when carefully combined and validated,
+can provide effective solutions for shared mobility matching problems, while remaining easy to implement
+and extend.
+\end{abstract}
+
 \tableofcontents
 
 \chapter{Modeling the Experimental Part}

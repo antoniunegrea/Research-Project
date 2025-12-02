@@ -43,6 +43,101 @@ and extend.
 
 \tableofcontents
 
+\chapter*{Research Classification}
+\addcontentsline{toc}{chapter}{Research Classification}
+
+\section*{ACM Computing Classification System (CCS)}
+\begin{itemize}
+\item Information systems $\rightarrow$ Geographic information systems
+\item Information systems $\rightarrow$ Location based services
+\item Computing methodologies $\rightarrow$ Optimization algorithms
+\item Applied computing $\rightarrow$ Transportation
+\end{itemize}
+
+\section*{AMS Subject Classification}
+\begin{itemize}
+\item 90B06 -- Transportation, logistics
+\item 68W15 -- Parallel and distributed algorithms (for matching strategies)
+\item 65K10 -- Optimization and variational techniques
+\end{itemize}
+
+\chapter{Introduction}
+
+Urban transportation systems face increasing pressure due to traffic congestion,
+environmental concerns, and inefficient use of vehicle capacity.
+Shared mobility and carpooling systems aim to mitigate these issues by enabling
+multiple travelers with similar routes to share the same vehicle.
+A core challenge in such systems is determining when two or more trips are
+``similar enough'' to be matched without causing excessive detours or unfair delays.
+
+\section{Background and Motivation}
+
+Most shared mobility platforms rely on route similarity measures to decide
+which trips can be merged.
+Existing approaches often employ complex spatial clustering, probabilistic models,
+or machine-learning-based similarity estimators.
+While powerful, these methods tend to be computationally expensive,
+difficult to tune, and hard to reproduce across datasets and cities.
+
+In practice, many real-world systems require fast, interpretable,
+and easily adjustable matching algorithms, particularly in dynamic,
+real-time environments.
+
+\section{Problem Statement}
+
+Given a set of user trips, each represented as a spatial route with temporal constraints,
+the objective is to group compatible trips such that:
+\begin{itemize}
+\item the total travel distance is reduced (efficiency);
+\item individual detours are bounded (fairness);
+\item the matching process remains computationally feasible.
+\end{itemize}
+
+The problem addressed in this paper is the design of a route similarity model
+that balances simplicity and effectiveness, while enabling both static and dynamic
+matching strategies.
+
+\section{Related Work and Open Challenges}
+
+Previous studies have explored spatial density models, graph-based similarity,
+and time-space optimization techniques.
+However, several challenges remain insufficiently addressed:
+\begin{itemize}
+\item lack of interpretability of similarity scores;
+\item limited control over efficiency--fairness trade-offs;
+\item high computational complexity for large-scale systems.
+\end{itemize}
+
+\section{Original Contributions}
+
+This paper makes the following original contributions:
+\begin{itemize}
+\item a simple yet expressive route similarity function combining geometric distance
+and segment overlap;
+\item a unified cost formulation applicable to both static and greedy matching;
+\item a detailed experimental validation illustrating the efficiency--equity trade-off;
+\item a reproducible framework suitable for extension to real-world datasets.
+\end{itemize}
+
+\section{Research Questions}
+
+The study aims to answer the following research questions:
+\begin{itemize}
+\item Can simple similarity measures achieve competitive performance compared to
+more complex models?
+\item How does parameter tuning affect efficiency and fairness?
+\item What are the trade-offs between static and dynamic matching strategies?
+\end{itemize}
+
+\section{Paper Structure}
+
+The remainder of the paper is organized as follows.
+Chapter 2 introduces the proposed similarity model and matching approach.
+Chapters 3 and 4 describe the experimental setup and controlled case study.
+Chapter 5 prepares the validation on real-world datasets.
+Finally, conclusions and future research directions are discussed.
+
+
 \chapter{Modeling the Experimental Part}
 
 This chapter rigorously describes the data used, the planned experiments,

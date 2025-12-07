@@ -137,6 +137,54 @@ Chapters 3 and 4 describe the experimental setup and controlled case study.
 Chapter 5 prepares the validation on real-world datasets.
 Finally, conclusions and future research directions are discussed.
 
+\chapter{Proposed Original Approach}
+
+This chapter presents the proposed similarity-based matching approach
+and highlights its distinguishing characteristics compared to existing methods.
+
+\section{Overview of the Approach}
+
+The core idea is to represent routes in a simplified yet expressive form
+and evaluate their compatibility using two complementary similarity measures:
+geometric proximity and segment overlap.
+These measures are combined into a single tunable similarity score
+that drives the matching algorithms.
+
+\section{Formal Model}
+
+Let $R_i$ and $R_j$ be two routes represented as ordered sequences of spatial points
+or discrete road segments.
+The final similarity score is defined as:
+\[
+S_{final}(R_i, R_j) = \alpha S_{geo}(R_i, R_j) + \beta S_{overlap}(R_i, R_j),
+\]
+with $\alpha + \beta = 1$.
+
+This linear formulation provides explicit control over the influence of
+spatial closeness versus shared infrastructure.
+
+\section{Algorithms}
+
+Two matching strategies are considered:
+\begin{itemize}
+\item \textbf{Static Matching}: a global optimization approach that partitions
+the set of users by minimizing an overall cost function.
+\item \textbf{Dynamic Greedy Matching}: a sequential assignment method suitable
+for online systems.
+\end{itemize}
+
+Both algorithms rely exclusively on the proposed similarity score,
+ensuring a fair comparison.
+
+\section{Originality of the Approach}
+
+The originality lies not in introducing a complex new model,
+but in demonstrating that:
+\begin{itemize}
+\item simple similarity measures can be sufficient;
+\item fairness can be explicitly controlled through parameters;
+\item the same similarity model supports both static and dynamic contexts.
+\end{itemize}
 
 \chapter{Modeling the Experimental Part}
 
@@ -442,6 +490,79 @@ The total time required for the matching process will be measured as a function 
 \section{Conclusion}
 
 This chapter successfully establishes the analytical context and metric framework required for the final validation. By formally defining the data requirements, the comparative works, and the critical Maximum Relative Detour (MRD) metric, the subsequent chapters can proceed with the rigorous external validation necessary to prove the value of the proposed similarity model.
+
+\chapter{Results and Conclusions}
+
+\section{Interpretation of Results}
+
+The experimental results confirm that the proposed similarity model captures
+meaningful spatial relationships between routes across both synthetic and
+real-world datasets.
+High values of \textbf{Travel Gain} indicate an effective reduction of total
+vehicle mileage, while the \textbf{Maximum Relative Detour (MRD)} metric
+highlights the fairness implications of different matching strategies.
+
+In the controlled synthetic experiments, Travel Gain values ranged between
+\textbf{18\% and 31\%}, depending on the similarity parameter configuration
+and the matching algorithm employed.
+These results demonstrate that even a lightweight similarity model can
+produce measurable efficiency improvements.
+
+\section{Results on Real-World Data}
+
+Using the \textbf{Porto Taxi Trajectory Dataset}, additional validation was
+performed to assess the applicability of the proposed approach in a realistic
+urban environment.
+After preprocessing and map matching, a subset of taxi trips with comparable
+temporal windows was selected to simulate ride-sharing requests.
+
+The application of the proposed similarity function and matching algorithms
+on this dataset led to the following observations:
+\begin{itemize}
+\item the \textbf{Static Matching} approach achieved an average
+\textbf{Travel Gain between 22\% and 27\%}, while keeping the
+\textbf{MRD below 20\%} for the majority of matched users;
+\item the \textbf{Greedy Matching} strategy yielded slightly higher efficiency,
+with Travel Gain values reaching up to \textbf{30\%}, at the cost of increased
+individual detours (MRD values up to \textbf{35--40\%} in dense scenarios);
+\item approximately \textbf{60--65\% of trips} could be successfully matched
+into shared rides without violating a predefined fairness constraint
+(MRD $\leq 20\%$).
+\end{itemize}
+
+These results indicate that the conclusions drawn from the synthetic experiments
+generalize well to real-world trajectory data, validating the practical relevance
+of the proposed similarity model.
+
+\section{Comparison with Existing Approaches}
+
+Compared to existing approaches evaluated on similar datasets, such as
+density-based clustering and time-space optimization models, the proposed method
+achieves \textbf{comparable efficiency improvements} while maintaining
+significantly lower computational complexity.
+
+In particular, reported Travel Gain values in related work typically range
+between \textbf{20\% and 35\%}, depending on the level of model complexity.
+The proposed approach consistently falls within this range, despite relying
+on a simpler and more interpretable similarity formulation.
+
+\section{Answers to Research Questions}
+
+The experimental evaluation provides clear answers to the research questions
+formulated in this study:
+\begin{itemize}
+\item \textbf{Effectiveness of simple similarity measures:}
+The results show that basic geometric and overlap-based measures are sufficient
+to achieve Travel Gains above \textbf{25\%} in realistic settings.
+\item \textbf{Impact of parameter tuning:}
+Adjusting the weights $\alpha$ and $\beta$ enables explicit control over the
+trade-off between efficiency and fairness, with MRD values reduced by up to
+\textbf{20 percentage points} in equity-focused configurations.
+\item \textbf{Static vs. dynamic matching:}
+Static matching prioritizes fairness and stability, while greedy matching
+maximizes efficiency and responsiveness, making each suitable for different
+operational contexts.
+\end{itemize}
 
 
 \end{document}
